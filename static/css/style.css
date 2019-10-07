@@ -1,15 +1,4 @@
-path {
-    stroke: white;
-    stroke-width: 0.5px;
-    fill: black;
-}
-
-svg {
-    background: #efefef;
-}
-
-.states {
-	fill: #e5e5e5;
+.state-borders {
 	stroke: #fff;
-	stroke-width:1px;
+	stroke-width: 1px;
 }
