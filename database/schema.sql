@@ -1,6 +1,7 @@
 CREATE TABLE airlines (
     iata_code varchar(2) PRIMARY KEY,
-    airline varchar(255));
+    airline varchar(255)
+);
 
 CREATE TABLE airports (
     iata_code varchar(3) PRIMARY KEY,
@@ -8,8 +9,8 @@ CREATE TABLE airports (
     city varchar(255),
     state varchar(2),
     country varchar(3),
-    latitude varchar,
-    longitude varchar
+    latitude float,
+    longitude float
 );
 
 CREATE TABLE flights (
