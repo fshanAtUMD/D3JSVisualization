@@ -11,12 +11,13 @@ function makeMap() {
 
     Promise.all([usMapDataPromise, DelayCountByStateDataPromise, populationDataPromise]).then(values => {
         var us = values[0];
+
         var delayCount = values[1];
         var delayCountMap = delayCount.reduce((a, d) => {a[d[0]] = d[1]; return a;}, {});
 
-//        var populations = values[2].data;
-//        var populationsMap = populations.reduce((a, d) => {a[d.id] = d.population_est_july_2018; return a;}, {});
-        console.log(delayCount);
+        var populations = values[2].data;
+        var populationsMap = populations.reduce((a, d) => {a[d.id] = d.population_est_july_2018; return a;}, {});
+        console.log(delayCountMap);
 
         //Width and height of map
         var margin = {top:50, left:50, right:50, bottom: 50};
@@ -42,6 +43,13 @@ function makeMap() {
             ])
             .range(d3.schemeReds[9]);
 
+        var dScale = d3.scaleQuantize()
+            .domain([
+                d3.min(populations.map(d => d.population_est_july_2018)),
+                d3.max(populations.map(d => d.population_est_july_2018))
+            ])
+            .range(d3.schemeReds[9]);
+
         // Create SVG element and append to map
         var svg = d3.select("#map").append("svg")
             .attr("height", height + margin.top + margin.bottom)
@@ -54,11 +62,11 @@ function makeMap() {
             .append("path")
             .attr("class", "states")
             .attr("d", path)
-            .attr("fill", d => cScale(delayCountMap[d[0]]));
+            .attr("fill", d => cScale(delayCountMap[d.id]));
 
         // Draw state borders
         svg.append("path")
-            .attr("d", path(geoObj))
+            .attr("d", path())
             .attr("class", "state-borders");
     })
     .catch(error => console.log(error));
@@ -67,7 +75,7 @@ function makeMap() {
 
 
 function ready(error, data) {
-    console.log(data)
+    console.log(data);
 };
 
 
