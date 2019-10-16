@@ -1,8 +1,5 @@
 from psycopg2 import sql, connect, Error
 from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
-# from sqlalchemy import Column, Integer, String
-# from sqlalchemy.ext.declarative import declarative_base
-# from sqlalchemy.orm import relationships
 
 defaultdb = "postgres"
 dbname = "a3db"
@@ -50,38 +47,6 @@ def import_data():
     cur.close()
     conn.close()
     print("PostgreSQL connection closed.")
-
-# # ORM
-# Base = declarative_base()
-#
-#
-# class Airlines(Base):
-#     __tablename__ = 'airlines'
-#
-#     iata_code = Column(int, primary_key=True)
-#     airline = Column(String(255))
-#
-#
-# class Airports(Base):
-#     __tablename__ = 'airports'
-#
-#     iata_code = Column(int, primary_key=True)
-#     airport = Column(String(255))
-#     city = Column(String(255))
-#     state = Column(String(255))
-#     country = Column(float)
-#     latitude = Column(float)
-#
-# class Flights(Base):
-#     __tablename__ = 'flights'
-#
-#     year = Column(int)
-#     month = Column(int)
-#     day = Column(int)
-#     day_of_week = Column(int)
-#     airline = Column(String(2))
-#     flight_number = Column(int, primary_key=True)
-#
 
 
 if __name__ == '__main__':

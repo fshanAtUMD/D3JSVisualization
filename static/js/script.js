@@ -5,10 +5,18 @@ function test() {
 };
 
 function makeMap() {
-     var usMapDataPromise = d3.json("https://d3js.org/us-10m.v1.json");
+    var usMapDataPromise = d3.json("https://d3js.org/us-10m.v1.json");
+    var DelayCountByStateDataPromise = d3.json("http://localhost:5000/delay_count_by_state");
+    var populationDataPromise = d3.json("https://raw.githubusercontent.com/leibatt/example-datasets/master/us_state_populations.json");
 
-    Promise.all([usMapDataPromise]).then(values => {
+    Promise.all([usMapDataPromise, DelayCountByStateDataPromise, populationDataPromise]).then(values => {
         var us = values[0];
+        var delayCount = values[1];
+        var delayCountMap = delayCount.reduce((a, d) => {a[d[0]] = d[1]; return a;}, {});
+
+//        var populations = values[2].data;
+//        var populationsMap = populations.reduce((a, d) => {a[d.id] = d.population_est_july_2018; return a;}, {});
+        console.log(delayCount);
 
         //Width and height of map
         var margin = {top:50, left:50, right:50, bottom: 50};
@@ -27,24 +35,33 @@ function makeMap() {
         // Get GeoJson features of of a specified object in a topology
         var geoFeatures = topojson.feature(us, us.objects.states).features;
 
+        var cScale = d3.scaleQuantize()
+            .domain([
+                d3.min(delayCount.map(d => d[1])),
+                d3.max(delayCount.map(d => d[1]))
+            ])
+            .range(d3.schemeReds[9]);
+
         // Create SVG element and append to map
         var svg = d3.select("#map").append("svg")
             .attr("height", height + margin.top + margin.bottom)
-            .attr("width", width + margin.left + margin.right)
+            .attr("width", width + margin.left + margin.right);
 
         // Render GeoJSON object as an svg path element
         svg.selectAll("path")
             .data(geoFeatures)
             .enter()
             .append("path")
+            .attr("class", "states")
             .attr("d", path)
-            .attr("class", "states");
+            .attr("fill", d => cScale(delayCountMap[d[0]]));
 
         // Draw state borders
         svg.append("path")
             .attr("d", path(geoObj))
             .attr("class", "state-borders");
-    });
+    })
+    .catch(error => console.log(error));
 };
 
 
