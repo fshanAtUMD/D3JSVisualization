@@ -80,8 +80,8 @@ def get_value():
     records = cur.fetchall()
     cur.close()
     conn.close()
-    records = [[state_id[records[i][0]], records[i][1]]
-               for i in range(len(records))
-               if records[i][1] != '']
+    records_dir = [{'id': state_id[records[i][0]], 'count': records[i][1]}
+                   for i in range(len(records))
+                   if records[i][1] != '']
     # records_dir = dict((records[i][0], records[i][1]) for i in range(len(records)))
-    return jsonify(records), 200
+    return jsonify(records_dir), 200

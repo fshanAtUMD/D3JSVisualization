@@ -13,7 +13,7 @@ function makeMap() {
         var us = values[0];
 
         var delayCount = values[1];
-        var delayCountMap = delayCount.reduce((a, d) => {a[d[0]] = d[1]; return a;}, {});
+        var delayCountMap = delayCount.reduce((a, d) => {a[d.id] = d.count; return a;}, {});
 
         var populations = values[2].data;
         var populationsMap = populations.reduce((a, d) => {a[d.id] = d.population_est_july_2018; return a;}, {});
@@ -38,8 +38,8 @@ function makeMap() {
 
         var cScale = d3.scaleQuantize()
             .domain([
-                d3.min(delayCount.map(d => d[1])),
-                d3.max(delayCount.map(d => d[1]))
+                d3.min(delayCount.map(d => d.count)),
+                d3.max(delayCount.map(d => d.count))
             ])
             .range(d3.schemeReds[9]);
 
@@ -62,7 +62,9 @@ function makeMap() {
             .append("path")
             .attr("class", "states")
             .attr("d", path)
-            .attr("fill", d => cScale(delayCountMap[d.id]));
+            .attr("fill", d => cScale(delayCountMap[d.id]))
+            .on("mouseover", handleMouseOver)
+            .on("mouseout", handleMouseOut);
 
         // Draw state borders
         svg.append("path")
@@ -72,6 +74,12 @@ function makeMap() {
     })
     .catch(error => console.log(error));
 };
+
+
+function makeBarChart() {
+
+};
+
 
 
 function handleMouseOver() {
