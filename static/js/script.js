@@ -66,12 +66,24 @@ function makeMap() {
 
         // Draw state borders
         svg.append("path")
-            .attr("d", path())
-            .attr("class", "state-borders");
+            .attr("d", path(geoObj))
+            .attr("class", "state-borders")
+            .attr("fill", "none");
     })
     .catch(error => console.log(error));
 };
 
+
+function handleMouseOver() {
+    d3.select(this)
+    .attr("stroke", "black");
+};
+
+
+function handleMouseOut() {
+    d3.select(this)
+    .attr("stroke", "");
+};
 
 
 function ready(error, data) {
