@@ -3,7 +3,7 @@
 	stroke-width: 2px;
 }
 
-div.tooltip-states {
+div.click-info {
     position: absolute;
     text-align: center;
     padding: .5rem;
