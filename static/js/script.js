@@ -23,18 +23,17 @@ Promise.all([usMapDataPromise, DelayCountByStateDataPromise, populationDataPromi
     var height = 600 - margin.top - margin.bottom;
     var width = 1200 - margin.left - margin.right;
 
-    var clickDiv = d3.select("body").append("div")
-        .attr("class", "click-info")
+    var clickDiv = d3.select("#click-info")
         .style("display", "none");
 
     var chooseMeasureDiv = d3.select("#measure")
         .append("select")
         .on("change", handleOnChange);
     chooseMeasureDiv.append("option")
-        .text("Total Number of Delayed Flights")
+        .text("Number of Delayed Flights")
         .attr("value", "delayCount");
     chooseMeasureDiv.append("option")
-        .text("Total Number of Airports")
+        .text("Number of Airports")
         .attr("value", "airportCount");
 
     // Used for changing measure
@@ -100,9 +99,8 @@ Promise.all([usMapDataPromise, DelayCountByStateDataPromise, populationDataPromi
             .duration("50")
             .attr("opacity", ".85");
         // display with mouse click
-        clickDiv.text("Total Number of delays: " + delayCountMap[d.id])
-//            .style("left", (d3.event.pageX + 10) + "px")
-//            .style("top", (d3.event.pageY + 20) + "px")
+        clickDiv.html("Total Number of delays: " + delayCountMap[d.id]
+            + "<br> Total Number of airports: " + airportCountMap[d.id])
             .style("display", "inline");
     };
 

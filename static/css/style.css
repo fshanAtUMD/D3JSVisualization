@@ -3,7 +3,7 @@
 	stroke-width: 2px;
 }
 
-div.click-info {
+#click-info {
     position: absolute;
     text-align: center;
     padding: .5rem;
@@ -13,4 +13,5 @@ div.click-info {
     border-radius: 8px;
     pointer-events: none;
     font-size: .7rem;
+    display: none;
 }
