@@ -19,17 +19,34 @@ def homepage():
 
 
 @app.route('/delay_count_by_state', methods=['GET'])
-def get_value():
+def get_delay_count_by_state():
     conn = connect(dbname=dbname, user=user, password=password)
     cur = conn.cursor()
     cur.execute("SELECT airports.state, count(*), count(distinct airports) "
                 "FROM flights INNER JOIN airports "
                 "ON flights.origin_airport = airports.iata_code "
-                "GROUP BY airports.state")
+                "GROUP BY airports.state;")
     records = cur.fetchall()
     cur.close()
     conn.close()
     records_dir = [{'id': state_id[records[i][0]], 'count': records[i][1], "airports": records[i][2]}
+                   for i in range(len(records))
+                   if records[i][1] != '']
+    return jsonify(records_dir), 200
+
+
+@app.route('/delay_count_by_state_week', methods=['GET'])
+def get_delay_count_by_state_week():
+    conn = connect(dbname=dbname, user=user, password=password)
+    cur = conn.cursor()
+    cur.execute("SELECT airports.state, flights.day_of_week, count(*) "
+                "FROM flights INNER JOIN airports "
+                "ON flights.origin_airport = airports.iata_code "
+                "GROUP BY airports.state, flights.day_of_week;")
+    records = cur.fetchall()
+    cur.close()
+    conn.close()
+    records_dir = [{'id': state_id[records[i][0]], 'day_of_week': records[i][1], "count": records[i][2]}
                    for i in range(len(records))
                    if records[i][1] != '']
     return jsonify(records_dir), 200

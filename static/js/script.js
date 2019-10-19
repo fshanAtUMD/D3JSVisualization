@@ -5,18 +5,18 @@ function test() {
 };
 
 var usMapDataPromise = d3.json("https://d3js.org/us-10m.v1.json");
-var DelayCountByStateDataPromise = d3.json("http://localhost:5000/delay_count_by_state");
-var populationDataPromise = d3.json("https://raw.githubusercontent.com/leibatt/example-datasets/master/us_state_populations.json");
+var delayCountByStateDataPromise = d3.json("http://localhost:5000/delay_count_by_state");
+var weeklyByStateDataPromise = d3.json("http://localhost:5000/delay_count_by_state_week");
 
-Promise.all([usMapDataPromise, DelayCountByStateDataPromise, populationDataPromise]).then(values => {
+Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPromise]).then(values => {
     var us = values[0];
     var byStateRecords = values[1];
     var delayCountMap = byStateRecords.reduce((a, d) => {a[d.id] = d.count; return a;}, {});
     var airportCountMap = byStateRecords.reduce((a, d) => {a[d.id] = d.airports; return a;}, {});
 
-    var populations = values[2].data;
+    var populations = values[2];
     var populationsMap = populations.reduce((a, d) => {a[d.id] = d.population_est_july_2018; return a;}, {});
-    console.log(us);
+    console.log(populations);
 
     //Width and height of map
     var margin = {top:50, left:50, right:50, bottom: 50};
@@ -91,6 +91,10 @@ Promise.all([usMapDataPromise, DelayCountByStateDataPromise, populationDataPromi
         .attr("d", path(geoObj))
         .attr("class", "state-borders")
         .attr("fill", "none");
+
+
+    // Create bar chart
+
 
     // functions
     function handleClick(d, i) {
