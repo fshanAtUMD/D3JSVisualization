@@ -14,9 +14,12 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
     var delayCountMap = byStateRecords.reduce((a, d) => {a[d.id] = d.count; return a;}, {});
     var airportCountMap = byStateRecords.reduce((a, d) => {a[d.id] = d.airports; return a;}, {});
 
-    var populations = values[2];
-    var populationsMap = populations.reduce((a, d) => {a[d.id] = d.population_est_july_2018; return a;}, {});
-    console.log(populations);
+    var byWeekStateRecords = values[2];
+    var weekStateDelayCountMap = byWeekStateRecords.reduce((a, d) => {
+        if (a[d.id]) {a[d.id].push([d.day_of_week, d.count]);}
+        else a[d.id] = [[d.day_of_week, d.count]];
+        return a;}, {});
+    console.log(weekStateDelayCountMap);
 
     //Width and height of map
     var margin = {top:50, left:50, right:50, bottom: 50};
@@ -70,12 +73,12 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
     var airportCountScheme = d => airportScale(airportCountMap[d.id])
 
     // Create SVG element and append to map
-    var svg = d3.select("#map").append("svg")
+    var mapSvg = d3.select("#map").append("svg")
         .attr("height", height + margin.top + margin.bottom)
         .attr("width", width + margin.left + margin.right);
 
     // Render GeoJSON object as an svg path element
-    svg.selectAll("path")
+    mapSvg.selectAll("path")
         .data(geoFeatures)
         .enter()
         .append("path")
@@ -87,14 +90,38 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
         .on("mouseout", handleMouseOut);
 
     // Draw state borders
-    svg.append("path")
+    mapSvg.append("path")
         .attr("d", path(geoObj))
         .attr("class", "state-borders")
         .attr("fill", "none");
 
-
     // Create bar chart
+    height = 300 - margin.top - margin.bottom;
+    width = 400 - margin.left - margin.right;
 
+    var barSvg = d3.select("#bar")
+        .append("svg")
+            .attr("height", height + margin.top + margin.bottom)
+            .attr("width", width + margin.left + margin.right)
+        .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // X axis
+    var x = d3.scaleBand()
+        .range([0, width])
+        .domain(byWeekStateRecords.map(d => d.day_of_week))
+        .padding(0.2);
+    barSvg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(d3.axisBottom(x));
+
+    // Add Y axis
+    var y = d3.scaleLinear()
+        .domain([0, d3.max(byWeekStateRecords.map(d => d.count))])
+        .range([height, 0]);
+    barSvg.append("g")
+        .attr("class", "myYaxis")
+        .call(d3.axisLeft(y));
 
     // functions
     function handleClick(d, i) {
@@ -103,9 +130,24 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
             .duration("50")
             .attr("opacity", ".85");
         // display with mouse click
-        clickDiv.html("Total Number of delays: " + delayCountMap[d.id]
-            + "<br> Total Number of airports: " + airportCountMap[d.id])
+//        clickDiv.html("Total Number of delays: " + delayCountMap[d.id]
+//            + "<br> Total Number of airports: " + airportCountMap[d.id])
+//            .style("display", "inline");
+        clickDiv.html(weekStateDelayCountMap[d.id])
             .style("display", "inline");
+        // bar chart with mouse click
+        var u = barSvg.selectAll("rect").data(weekStateDelayCountMap[d.id]);
+        u.enter()
+            .append("rect")
+            .merge(u)
+            .transition()
+            .duration("1000")
+            .attr("x", d => d[1])
+            .attr("y", d => d[0])
+            .attr("width", x.bandwidth())
+            .attr("height", function(d) { return height - y(d[1]); })
+            .attr("fill", "#69b3a2")
+
     };
 
     function handleMouseOut(d, i) {
@@ -121,10 +163,10 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
         isDelayCount = !isDelayCount;
 
         if (isDelayCount) {
-            svg.selectAll(".states")
+            mapSvg.selectAll(".states")
                 .attr("fill", delayCountScheme);
         } else {
-            svg.selectAll(".states")
+            mapSvg.selectAll(".states")
                 .attr("fill", airportCountScheme);
         }
     };
