@@ -137,10 +137,6 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
         d3.select(this).transition()
             .duration("50")
             .attr("opacity", ".85");
-//        // display with mouse click
-//        clickDiv.html("Total Number of delays: " + delayCountMap[d.id]
-//            + "<br> Total Number of airports: " + airportCountMap[d.id])
-//            .style("display", "inline");
         // bar chart with mouse click
         var u = barSvg.selectAll("rect").data(weekStateDelayCountMap[d.id]);
         u.enter()
