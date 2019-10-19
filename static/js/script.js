@@ -121,7 +121,7 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
       .attr("transform",
             "translate(" + (width/2) + " ," +  (height + margin.top/4*3) + ")")
       .style("text-anchor", "middle")
-      .text("Delays by day of week in one airport");
+      .text("Avg delays by day of week");
 
     // Add Y axis
     var y = d3.scaleLinear()
