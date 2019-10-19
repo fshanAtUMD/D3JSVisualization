@@ -39,7 +39,7 @@ def get_delay_count_by_state():
 def get_delay_count_by_state_week():
     conn = connect(dbname=dbname, user=user, password=password)
     cur = conn.cursor()
-    cur.execute("SELECT airports.state, flights.day_of_week, count(*) "
+    cur.execute("SELECT airports.state, flights.day_of_week, count(*)/count(distinct airports) "
                 "FROM flights INNER JOIN airports "
                 "ON flights.origin_airport = airports.iata_code "
                 "GROUP BY airports.state, flights.day_of_week;")

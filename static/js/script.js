@@ -19,7 +19,6 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
         if (a[d.id]) {a[d.id].push([d.day_of_week, d.count]);}
         else a[d.id] = [[d.day_of_week, d.count]];
         return a;}, {});
-    console.log(weekStateDelayCountMap);
 
     //Width and height of map
     var margin = {top:50, left:50, right:50, bottom: 50};
@@ -87,6 +86,8 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
         .attr("fill", delayCountScheme)
         .attr("transform", "translate(0, 0)")
         .on("click", handleClick)
+        .on("mouseover", handleMouseOver)
+        .on("mousemove", handleMouseMove)
         .on("mouseout", handleMouseOut);
 
     // Draw state borders
@@ -101,10 +102,10 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
 
     var barSvg = d3.select("#bar")
         .append("svg")
-            .attr("height", height + margin.top + margin.bottom)
-            .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .attr("width", width + margin.left + margin.right)
         .append("g")
-            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     // X axis
     var x = d3.scaleBand()
@@ -114,6 +115,13 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
     barSvg.append("g")
         .attr("transform", "translate(0," + height + ")")
         .call(d3.axisBottom(x));
+    // title
+    barSvg.append("text")
+      .attr("class", "bar-chart-title")
+      .attr("transform",
+            "translate(" + (width/2) + " ," +  (height + margin.top/4*3) + ")")
+      .style("text-anchor", "middle")
+      .text("Delays by day of week in one airport");
 
     // Add Y axis
     var y = d3.scaleLinear()
@@ -129,12 +137,10 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
         d3.select(this).transition()
             .duration("50")
             .attr("opacity", ".85");
-        // display with mouse click
+//        // display with mouse click
 //        clickDiv.html("Total Number of delays: " + delayCountMap[d.id]
 //            + "<br> Total Number of airports: " + airportCountMap[d.id])
 //            .style("display", "inline");
-        clickDiv.html(weekStateDelayCountMap[d.id])
-            .style("display", "inline");
         // bar chart with mouse click
         var u = barSvg.selectAll("rect").data(weekStateDelayCountMap[d.id]);
         u.enter()
@@ -142,13 +148,27 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
             .merge(u)
             .transition()
             .duration("1000")
-            .attr("x", d => d[1])
-            .attr("y", d => d[0])
+            .attr("x", d => x(d[0]))
+            .attr("y", d => y(d[1]))
             .attr("width", x.bandwidth())
             .attr("height", function(d) { return height - y(d[1]); })
             .attr("fill", "#69b3a2")
-
     };
+
+    function handleMouseOver(d, i) {
+        // display with mouse click
+        clickDiv.html("Total Number of delays: " + delayCountMap[d.id]
+            + "<br> Total Number of airports: " + airportCountMap[d.id])
+            .style("display", "inline");
+    };
+
+    function handleMouseMove(d, i) {
+        // display with mouse click
+        clickDiv
+            .style("left", (d3.event.pageX + 10) + "px")
+            .style("top", (d3.event.pageY + 20) + "px");
+    };
+
 
     function handleMouseOut(d, i) {
         // mouse out event
