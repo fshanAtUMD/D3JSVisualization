@@ -17,7 +17,7 @@ function makeMap() {
 
         var populations = values[2].data;
         var populationsMap = populations.reduce((a, d) => {a[d.id] = d.population_est_july_2018; return a;}, {});
-        console.log(delayCountMap);
+        console.log(delayCount);
 
         //Width and height of map
         var margin = {top:50, left:50, right:50, bottom: 50};
@@ -63,8 +63,17 @@ function makeMap() {
             .attr("class", "states")
             .attr("d", path)
             .attr("fill", d => cScale(delayCountMap[d.id]))
-            .on("mouseover", handleMouseOver)
-            .on("mouseout", handleMouseOut);
+            .attr("transform", "translate(0, 0)")
+            .on("mouseover", function (d, i) {
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '.85');
+            })
+            .on("mouseout", function (d, i) {
+                d3.select(this).transition()
+                    .duration('50')
+                    .attr('opacity', '1');
+            });
 
         // Draw state borders
         svg.append("path")
@@ -82,16 +91,20 @@ function makeBarChart() {
 
 
 
-function handleMouseOver() {
-    d3.select(this)
-    .attr("stroke", "black");
-};
-
-
-function handleMouseOut() {
-    d3.select(this)
-    .attr("stroke", "");
-};
+//function handleMouseOver(d) {
+//    d3.select(this)
+//        .transition()
+//        .duration('50')
+//        .attr("opacity", "85");
+//};
+//
+//
+//function handleMouseOut(d) {
+//    d3.select(this)
+//        .transition()
+//        .duration('50')
+//        .attr("opacity", "1");
+//};
 
 
 function ready(error, data) {
