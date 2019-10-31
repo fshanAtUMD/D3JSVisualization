@@ -8,9 +8,25 @@ var usMapDataPromise = d3.json("https://d3js.org/us-10m.v1.json");
 var delayCountByStateDataPromise = d3.json("http://localhost:5000/delay_count_by_state");
 var weeklyByStateDataPromise = d3.json("http://localhost:5000/delay_count_by_state_week");
 
+// log
+var start = new Date();
+function time() {
+    var now = new Date();
+    var timeDiff = now - start;
+
+    // in seconds to tenths
+    timeDiff /= 100;
+    var seconds = Math.round(timeDiff)/10;
+    return seconds + "s";
+};
+
 Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPromise]).then(values => {
+    // client log
+    console.log("Map loaded in " + time());
+
     var us = values[0];
     var byStateRecords = values[1];
+    var stateAbbrMap = byStateRecords.reduce((a, d) => {a[d.id] = d.abbr; return a;}, {});
     var delayCountMap = byStateRecords.reduce((a, d) => {a[d.id] = d.count; return a;}, {});
     var airportCountMap = byStateRecords.reduce((a, d) => {a[d.id] = d.airports; return a;}, {});
 
@@ -149,13 +165,18 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
             .attr("width", x.bandwidth())
             .attr("height", function(d) { return height - y(d[1]); })
             .attr("fill", "#69b3a2")
+         // client side log
+         console.log("Click " + stateAbbrMap[d.id] + " at " + time());
     };
 
     function handleMouseOver(d, i) {
         // display with mouse click
-        clickDiv.html("Total Number of delays: " + delayCountMap[d.id]
+        clickDiv.html("<strong>" + stateAbbrMap[d.id] + "</strong>" + " "
+            + "<br> Total Number of delays: " + delayCountMap[d.id]
             + "<br> Total Number of airports: " + airportCountMap[d.id])
             .style("display", "inline");
+        // client side log
+        console.log("Mouse over " + stateAbbrMap[d.id] + " at " + time());
     };
 
     function handleMouseMove(d, i) {
@@ -185,6 +206,10 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
             mapSvg.selectAll(".states")
                 .attr("fill", airportCountScheme);
         }
+
+        // client side log
+        var display = isDelayCount?"delay count":"airport count";
+        console.log("Change display to " + display + " at " + time());
     };
 
 })

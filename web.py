@@ -11,6 +11,7 @@ with open('state_code.csv', mode='r') as f:
     reader = csv.reader(f)
     next(f)
     state_id = {rows[0]: rows[1] for rows in reader}
+    # state_abbr = {rows[1]: rows[0] for rows in reader}
 
 
 @app.route('/')
@@ -29,7 +30,10 @@ def get_delay_count_by_state():
     records = cur.fetchall()
     cur.close()
     conn.close()
-    records_dir = [{'id': state_id[records[i][0]], 'count': records[i][1], "airports": records[i][2]}
+    records_dir = [{'id': state_id[records[i][0]],
+                    'abbr': records[i][0],
+                    'count': records[i][1],
+                    'airports': records[i][2]}
                    for i in range(len(records))
                    if records[i][1] != '']
     return jsonify(records_dir), 200
@@ -46,7 +50,9 @@ def get_delay_count_by_state_week():
     records = cur.fetchall()
     cur.close()
     conn.close()
-    records_dir = [{'id': state_id[records[i][0]], 'day_of_week': records[i][1], "count": records[i][2]}
+    records_dir = [{'id': state_id[records[i][0]],
+                    'day_of_week': records[i][1],
+                    'count': records[i][2]}
                    for i in range(len(records))
                    if records[i][1] != '']
     return jsonify(records_dir), 200
