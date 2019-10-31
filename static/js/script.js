@@ -186,7 +186,6 @@ Promise.all([usMapDataPromise, delayCountByStateDataPromise, weeklyByStateDataPr
             .style("top", (d3.event.pageY + 20) + "px");
     };
 
-
     function handleMouseOut(d, i) {
         // mouse out event
         d3.select(this).transition()
