@@ -1,14 +1,16 @@
 # D3JSVisualization
 
-**Import Data**: 
+**Dataset:** https://www.kaggle.com/usdot/flight-delays
+
+**Import Data:**
    * Unzip flight-delays.zip in ./database directory.
    * python3 db_setup.py
 
-**Run Server**: python3 server.py
+**Run Server:** python3 server.py
 
-**Port**: 5000
+**Port:** 5000
 
-**Webpage**: http://localhost:5000
+**Webpage:** http://localhost:5000
 
 There are about 5 million records so it will take some time to query and render.
    
